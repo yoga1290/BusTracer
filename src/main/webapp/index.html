@@ -91,12 +91,14 @@ html
 								if(!sp.isRecording) return;
 								
 								if (navigator.geolocation)
-									navigator.geolocation.getCurrentPosition(function(position){
+									navigator.geolocation.watchPosition(function(position){
+										
 										BusSvc.insert(busId,position.coords.latitude,position.coords.longitude)
 											.success(function(){
 												gMap.setPosition(position.coords.latitude,position.coords.longitude);
-												setTimeout(recorder,3000);
 											});
+										if(!sp.isRecording) navigator.geolocation.clearWatch();
+										
 									});
 							};
 							
@@ -105,6 +107,8 @@ html
 								BusSvc.getPosition(busId)
 									.success(function(response){
 										gMap.setPosition(response.lat,response.lng);
+									})
+									.finally(function(){
 										setTimeout(updater,3000);
 									});
 							};
