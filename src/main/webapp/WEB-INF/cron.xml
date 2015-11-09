@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cronentries>
+  <cron>
+    <url>/cron/erase</url>
+    <description>Clean up data</description>
+    <schedule>every 24 hours</schedule>
+    <target>bus</target>
+  </cron>
+</cronentries>
