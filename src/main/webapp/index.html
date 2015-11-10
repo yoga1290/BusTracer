@@ -24,6 +24,13 @@ html
 				i.material-icons(style="font-size:48px") my_location
 		script(async,defer,src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBUjSM2qOaZPE9JW8_YlwDY0nFCKoHE1w&callback=gMap.init")
 		script.
+			var watchPositionId=null;
+			window.onunload=function(){
+				if(watchPositionId!==null)
+					navigator.geolocation.clearWatch(watchPositionId);
+			};
+			
+			
 			var gMap=(function(elementId){
 				
 				var self={};
@@ -89,16 +96,22 @@ html
 					
 							var recorder=function(){
 								if(!sp.isRecording) return;
+								if(watchPositionId!==null)
+									navigator.geolocation.clearWatch(watchPositionId);
 								
 								if (navigator.geolocation)
-									navigator.geolocation.watchPosition(function(position){
+									watchPositionId=navigator.geolocation.watchPosition(function(position){
 										
 										BusSvc.insert(busId,position.coords.latitude,position.coords.longitude)
 											.success(function(){
 												gMap.setPosition(position.coords.latitude,position.coords.longitude);
 											});
-										if(!sp.isRecording) navigator.geolocation.clearWatch();
+										if(!sp.isRecording) navigator.geolocation.clearWatch(watchPositionId);
 										
+									},function(error){},{
+										enableHighAccuracy:true,
+										maximumAge: 5000,
+										timeout:15000
 									});
 							};
 							
